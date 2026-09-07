@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Pessoal - LifeOS</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Ícones minimalistas -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  
+  <div class="layout-wrapper">
+    
+    <!-- SIDEBAR DE NAVEGAÇÃO -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i data-lucide="layout-dashboard"></i>
+        <span>LifeOS</span>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active">
+          <i data-lucide="home" style="width: 18px;"></i>
+          Check-in Diário
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="book" style="width: 18px;"></i>
+          Meus Diários
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="activity" style="width: 18px;"></i>
+          Saúde & Fitness
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="pie-chart" style="width: 18px;"></i>
+          Finanças
+        </a>
+        <a href="#" class="nav-item">
+          <i data-lucide="target" style="width: 18px;"></i>
+          Metas do Mês
+        </a>
+        <a href="#" class="nav-item" style="margin-top: 2rem;">
+          <i data-lucide="settings" style="width: 18px;"></i>
+          Configurações
+        </a>
+      </nav>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main-content">
+      
+      <div class="app-container">
+        
+        <!-- HEADER -->
+        <div class="app-header">
+          <div>
+            <div class="date-text">Segunda-feira, 7 de Setembro</div>
+            <h1 class="greeting">Olá, João.</h1>
+          </div>
+          <div class="score-badge green">
+            <i data-lucide="activity" style="width: 18px; height: 18px;"></i>
+            85%
+          </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="app-content">
+          
+          <!-- QUICK METRICS -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">Peso Atual</div>
+              <div class="metric-value">78.5 kg</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Limite Diário (R$ 50,00)</div>
+              <div class="metric-value" style="color: var(--success-color);">Disponível: R$ 35,00</div>
+            </div>
+          </div>
+
+          <!-- FINANÇAS / ENVELOPES -->
+          <div class="section-block" style="grid-column: 1; grid-row: 1 / span 2; height: 100%;">
+            <h2 class="section-title">
+              Envelopes
+              <i data-lucide="wallet" style="color: var(--text-secondary); width: 18px;"></i>
+            </h2>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              
+              <!-- Envelope 1 -->
+              <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                  <span style="font-weight: 600; font-size: 0.95rem;">Uber</span>
+                  <span style="font-weight: 700; font-size: 1rem;">R$ 45,00</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 4px; overflow: hidden;">
+                  <div style="height: 100%; width: 77.5%; background: var(--warning-color);"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                  <span>Total: R$ 200</span>
+                  <span>Gasto: R$ 155</span>
+                  <span style="font-weight: 600; color: var(--text-primary);">Sobra: R$ 45</span>
+                </div>
+              </div>
+
+              <!-- Envelope 2 -->
+              <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-color);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                  <span style="font-weight: 600; font-size: 0.95rem;">Lazer</span>
+                  <span style="font-weight: 700; font-size: 1rem; color: var(--success-color);">R$ 220,00</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 4px; overflow: hidden;">
+                  <div style="height: 100%; width: 26%; background: var(--success-color);"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                  <span>Total: R$ 300</span>
+                  <span>Gasto: R$ 80</span>
+                  <span style="font-weight: 600; color: var(--success-color);">Sobra: R$ 220</span>
+                </div>
+              </div>
+
+              <!-- Envelope 3 -->
+              <div style="padding: 1rem; border: 1px solid #FCA5A5; border-radius: var(--radius-md); background: #FEF2F2; color: var(--danger-color);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                  <span style="font-weight: 600; font-size: 0.95rem;">Alimentação</span>
+                  <span style="font-weight: 700; font-size: 1rem;">-R$ 25,00</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #FCA5A5; border-radius: 4px; overflow: hidden;">
+                  <div style="height: 100%; width: 100%; background: var(--danger-color);"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 0.5rem; color: #991B1B;">
+                  <span>Total: R$ 200</span>
+                  <span>Gasto: R$ 225</span>
+                  <span style="font-weight: 700;">Estourado!</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- BALANÇO DE SCORE COMPACTO -->
+          <div class="section-block" style="grid-column: 2; grid-row: 1; height: auto;">
+            <h2 class="section-title">
+                Balanço Diário
+                <i data-lucide="scale" style="color: var(--text-secondary); width: 18px;"></i>
+              </h2>
+              <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                  <div style="font-size: 1rem; color: var(--text-secondary); font-weight: 500;">Sua Nota Hoje</div>
+                  <div style="font-size: 2.5rem; font-weight: 700; color: var(--success-color); line-height: 1;">
+                    85<span style="font-size: 1.2rem;">%</span>
+                  </div>
+                </div>
+                
+                <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 4px; margin-bottom: 1rem; overflow: hidden; position: relative;">
+                  <div style="position: absolute; left: 80%; top: 0; bottom: 0; width: 2px; background: rgba(0,0,0,0.15); z-index: 2;"></div>
+                  <div style="height: 100%; width: 85%; background: var(--success-color);"></div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; width: 100%;">
+                  <div style="flex: 1; display: flex; justify-content: center; align-items: center; background: #D1FAE5; color: #065F46; padding: 0.5rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem;">
+                    +100% <span style="font-size: 0.7rem; font-weight: 500; margin-left: 4px;">Hábitos</span>
+                  </div>
+                  <div style="flex: 1; display: flex; justify-content: center; align-items: center; background: #FEE2E2; color: #991B1B; padding: 0.5rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem;">
+                    -15% <span style="font-size: 0.7rem; font-weight: 500; margin-left: 4px;">Erros</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          <!-- TOTAL DO MÊS -->
+          <div class="section-block" style="grid-column: 2; grid-row: 2; height: auto; align-self: end;">
+            <h2 class="section-title">
+                Resumo do Mês
+                <i data-lucide="bar-chart-2" style="color: var(--text-secondary); width: 18px;"></i>
+              </h2>
+              <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+                
+                <!-- Meta de Dias Verdes -->
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                  <span style="font-weight: 600; font-size: 0.9rem;">Dias Produtivos (Verdes)</span>
+                  <span style="font-weight: 700; font-size: 0.95rem; color: var(--success-color);">12 de 22</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 4px; overflow: hidden; margin-bottom: 1.25rem;">
+                  <div style="height: 100%; width: 54%; background: var(--success-color);"></div>
+                </div>
+
+                <!-- Orçamento Global do Mês -->
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                  <span style="font-weight: 600; font-size: 0.9rem;">Gasto Geral do Mês</span>
+                  <span style="font-weight: 700; font-size: 0.95rem; color: var(--warning-color);">R$ 1.850 / 3.000</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 4px; overflow: hidden;">
+                  <div style="height: 100%; width: 61%; background: var(--warning-color);"></div>
+                </div>
+                
+              </div>
+          </div>
+
+          <!-- HABITS / TODO -->
+          <div class="section-block">
+            <h2 class="section-title">
+              Conquistas do Dia
+              <i data-lucide="check-circle-2" style="color: var(--text-secondary); width: 20px;"></i>
+            </h2>
+            <div class="list-group">
+              
+              <div class="list-item done">
+                <div class="item-left">
+                  <div class="checkbox checked"><i data-lucide="check" style="width:14px; height:14px;"></i></div>
+                  <span class="item-title">Treino de Força</span>
+                </div>
+                <span class="item-points">+15%</span>
+              </div>
+              
+              <div class="list-item done">
+                <div class="item-left">
+                  <div class="checkbox checked"><i data-lucide="check" style="width:14px; height:14px;"></i></div>
+                  <span class="item-title">Dormir 7h+</span>
+                </div>
+                <span class="item-points">+10%</span>
+              </div>
+
+              <div class="list-item">
+                <div class="item-left">
+                  <div class="checkbox"></div>
+                  <span class="item-title">Trabalho Focado (4h)</span>
+                </div>
+                <span class="item-points">+20%</span>
+              </div>
+              
+            </div>
+          </div>
+
+          <!-- MISTAKES -->
+          <div class="section-block">
+            <h2 class="section-title">
+              Registro de Erro
+              <i data-lucide="alert-triangle" style="color: var(--text-secondary); width: 20px;"></i>
+            </h2>
+            
+            <div class="mistake-card">
+              <div class="mistake-item">
+                <span class="mistake-title">Refeição fora da dieta</span>
+                <span class="penalty-tag">-15%</span>
+              </div>
+              <div class="mistake-item">
+                <span class="mistake-title">Procrastinação no trabalho</span>
+                <span class="penalty-tag">-15%</span>
+              </div>
+              <div class="mistake-item">
+                <span class="mistake-title">Estourou orçamento diário</span>
+                <span class="penalty-tag">-30%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DIÁRIO PESSOAL -->
+          <div class="section-block">
+            <h2 class="section-title">
+              Diário de Hoje
+              <i data-lucide="book-open" style="color: var(--text-secondary); width: 20px;"></i>
+            </h2>
+            <textarea class="textarea-input" placeholder="Como foi seu dia? Descreva aprendizados, emoções, ou notas..."></textarea>
+            <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+              <button class="btn" style="background: var(--text-primary); color: white;">Salvar Registro</button>
+            </div>
+          </div>
+
+          <!-- CALENDAR -->
+          <div class="section-block">
+            <h2 class="section-title">
+              Desempenho de Setembro
+              <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">12 dias verdes</span>
+            </h2>
+            
+            <div class="calendar-wrap">
+              
+              <div class="cal-header">
+                <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+              </div>
+              
+              <div class="calendar-grid">
+                <!-- Empty slots for offset -->
+                <div class="cal-day empty"></div>
+                <div class="cal-day empty"></div>
+                
+                <!-- Days -->
+                <div class="cal-day green">1</div>
+                <div class="cal-day green">2</div>
+                <div class="cal-day green">3</div>
+                <div class="cal-day yellow">4</div>
+                <div class="cal-day red">5</div>
+                
+                <div class="cal-day green">6</div>
+                <div class="cal-day green">7</div>
+                <div class="cal-day green">8</div>
+                <div class="cal-day yellow">9</div>
+                <div class="cal-day green">10</div>
+                <div class="cal-day green">11</div>
+                <div class="cal-day red">12</div>
+                
+                <div class="cal-day green">13</div>
+                <div class="cal-day green">14</div>
+                <div class="cal-day future">15</div>
+                <div class="cal-day future">16</div>
+                <div class="cal-day future">17</div>
+                <div class="cal-day future">18</div>
+                <div class="cal-day future">19</div>
+                
+                <div class="cal-day future">20</div>
+                <div class="cal-day future">21</div>
+                <div class="cal-day future">22</div>
+                <div class="cal-day future">23</div>
+                <div class="cal-day future">24</div>
+                <div class="cal-day future">25</div>
+                <div class="cal-day future">26</div>
+
+                <div class="cal-day future">27</div>
+                <div class="cal-day future">28</div>
+                <div class="cal-day future">29</div>
+                <div class="cal-day future">30</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
