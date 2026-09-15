@@ -1,0 +1,190 @@
+// backend/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------------------------------
+// 1. USUÁRIOS E AUTENTICAÇÃO (CORE)
+// -----------------------------------------------------------------------------
+
+model Usuario {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  email         String   @unique
+  senha         String
+  limite_diario Int      @default(50)
+
+  criadoEm      DateTime @default(now())
+  atualizadoEm  DateTime @updatedAt
+
+  // Relacionamentos com os módulos
+  envelopes         Envelope[]
+  gastos            Gasto[]
+  diarios           Diario[]
+  tarefas           Tarefa[]
+  falhas            Falha[]
+  metas_financeiras Meta_Financeira[]
+  metas_fitness     Meta_Fitness[]
+  investimentos     Investimento[]
+}
+
+// -----------------------------------------------------------------------------
+// 2. PRODUTIVIDADE E ROTINA
+// -----------------------------------------------------------------------------
+
+model Tarefa {
+  id           Int      @id @default(autoincrement())
+  titulo       String
+  concluida    Boolean  @default(false)
+  valor_diario Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarioId    Int
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Diario {
+  id           Int      @id @default(autoincrement())
+  titulo       String
+  conteudo     String
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarioId    Int
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// 3. FALHAS E PENALIDADES
+// -----------------------------------------------------------------------------
+
+model CategoriaFalha {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  valor        Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  falhas       Falha[]
+}
+
+model Falha {
+  id           Int      @id @default(autoincrement())
+  descricao    String
+  valor_diario Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  categoriaId  Int
+  categoria    CategoriaFalha @relation(fields: [categoriaId], references: [id])
+
+  usuarioId    Int
+  usuario      Usuario        @relation(fields: [usuarioId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// 4. SAÚDE E FITNESS
+// -----------------------------------------------------------------------------
+
+model Meta_Fitness {
+  id           Int       @id @default(autoincrement())
+  nome         String    // Ex: "Emagrecimento", "Correr"
+  unidade      String    // Ex: "kg", "km"
+  valor_atual  Float     // Onde você está hoje (ex: 78.5)
+  valor_alvo   Float     // Onde quer chegar (ex: 70.0)
+  data_limite  DateTime?
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  usuarioId    Int
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+
+  historico    HistoricoFitness[]
+}
+
+model HistoricoFitness {
+  id               Int      @id @default(autoincrement())
+  valor_registrado Float    // Ex: Subiu na balança e deu 78.0
+  data_registro    DateTime @default(now())
+
+  metaId           Int
+  meta             Meta_Fitness @relation(fields: [metaId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// 5. FINANÇAS E INVESTIMENTOS
+// -----------------------------------------------------------------------------
+
+model Envelope {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  limite       Int      @default(50)
+  valor_gasto  Int      @default(0)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarioId    Int
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
+
+  gastos       Gasto[]
+}
+
+model Gasto {
+  id           Int      @id @default(autoincrement())
+  descricao    String
+  valor        Int
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarioId    Int
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
+
+  envelopeId   Int
+  envelope     Envelope @relation(fields: [envelopeId], references: [id])
+}
+
+model Meta_Financeira {
+  id           Int       @id @default(autoincrement())
+  nome         String    // Ex: "Viagem pra Europa", "Carro"
+  valor_alvo   Float     // Aonde quer chegar (ex: 15000)
+  valor_atual  Float     @default(0) // Quanto já juntou (ex: 2000)
+  data_limite  DateTime? // Prazo opcional
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  usuarioId    Int
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+}
+
+model TipoInvestimento {
+  id            Int            @id @default(autoincrement())
+  nome          String
+  taxa          Float
+  prazo_saque   String         @default("Imediato")
+  criadoEm      DateTime       @default(now())
+  atualizadoEm  DateTime       @updatedAt
+  
+  investimentos Investimento[]
+}
+
+model Investimento {
+  id                 Int      @id @default(autoincrement())
+  nome               String   // Ex: "Tesouro Selic", "Bitcoin"
+  tipo               String   // Ex: "RENDA_FIXA", "CRIPTOMOEDA", "ACAO"
+  valor_investido    Float    // Quanto saiu do seu bolso
+  valor_atual        Float    // Quanto vale hoje
+  criadoEm           DateTime @default(now())
+  atualizadoEm       DateTime @updatedAt
+
+  tipoInvestimentoId Int
+  tipoInvestimento   TipoInvestimento @relation(fields: [tipoInvestimentoId], references: [id])
+
+  usuarioId          Int
+  usuario            Usuario          @relation(fields: [usuarioId], references: [id])
+}

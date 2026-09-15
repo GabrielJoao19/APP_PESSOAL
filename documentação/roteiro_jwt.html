@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Roteiro: Autenticação JWT no NestJS</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Estilos personalizados para o código */
+    pre {
+      background-color: var(--sidebar);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.875rem;
+      color: var(--primary);
+    }
+    pre code {
+      color: var(--foreground);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased p-6">
+  
+  <div class="max-w-4xl mx-auto space-y-8">
+    
+    <!-- Cabeçalho -->
+    <header class="text-center space-y-2">
+      <h1 class="text-3xl font-bold text-blue-600">Roteiro de Implementação JWT</h1>
+      <p class="text-gray-600">Guia definitivo para proteger o backend do LifeOS</p>
+    </header>
+
+    <!-- Passo 1: Instalação -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">1</div>
+        <h2 class="text-xl font-semibold">Instalação de Dependências</h2>
+      </div>
+      <p class="text-gray-600 mb-4">No terminal, dentro da pasta <code>backend</code>, execute o comando abaixo para instalar as bibliotecas de segurança do NestJS:</p>
+      <pre class="bg-gray-800 text-gray-100 p-4 rounded-lg"><code>npm install @nestjs/jwt @nestjs/passport passport passport-jwt bcrypt
+npm install -D @types/passport-jwt @types/bcrypt</code></pre>
+      <ul class="list-disc list-inside mt-4 space-y-2 text-sm text-gray-700">
+        <li><strong>@nestjs/jwt</strong>: O motor que fabrica e decodifica a pulseira (JWT).</li>
+        <li><strong>@nestjs/passport</strong>: O padrão ouro de autenticação para Node.js, adaptado para Nest.</li>
+        <li><strong>passport-jwt</strong>: A "estratégia" que ensina o porteiro a ler o cabeçalho <code>Bearer</code>.</li>
+        <li><strong>bcrypt</strong>: Embaralha as senhas do usuário no banco (Hash).</li>
+      </ul>
+    </section>
+
+    <!-- Passo 2: Ocultando a Senha -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">2</div>
+        <h2 class="text-xl font-semibold">Criptografando Senhas (Bcrypt)</h2>
+      </div>
+      <p class="text-gray-600 mb-4">Antes de salvar um usuário no <code>usuarios.service.ts</code>, devemos criptografar a senha enviada:</p>
+      <pre class="bg-gray-800 text-gray-100 p-4 rounded-lg"><code>import * as bcrypt from 'bcrypt';
+
+// Dentro da função criarUsuario():
+const saltRounds = 10;
+const senhaHasheada = await bcrypt.hash(dados.senha, saltRounds);
+dados.senha = senhaHasheada; // Substitui a senha pura pelo Hash
+
+return this.prisma.usuario.create({ data: dados });</code></pre>
+      
+      <div class="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <h3 class="font-semibold text-gray-800 mb-2">Entendendo o código linha por linha:</h3>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700">
+          <li><strong>import * as bcrypt</strong>: Traz a biblioteca para dentro do arquivo.</li>
+          <li><strong>saltRounds = 10</strong>: O "Salt" é um texto aleatório misturado na senha. O número 10 é o "custo" do algoritmo (quantas vezes ele roda). 10 é o padrão da indústria: seguro o suficiente para barrar hackers, mas rápido o suficiente para não travar o seu servidor.</li>
+          <li><strong>await bcrypt.hash(...)</strong>: A função pesada que faz a matemática. Ela pega a senha "123456" e transforma num monstro tipo <code>$2b$10$wK3...</code>. Usamos o <code>await</code> porque criptografia de verdade demora alguns milissegundos de propósito.</li>
+          <li><strong>dados.senha = senhaHasheada</strong>: Sobrescreve a senha limpa no objeto para garantir que o que vai ser salvo no Prisma é a versão embaralhada.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Passo 3: Geração do Módulo de Auth -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">3</div>
+        <h2 class="text-xl font-semibold">Criação do Módulo de Autenticação</h2>
+      </div>
+      <p class="text-gray-600 mb-4">Gere os arquivos do módulo de Auth rodando no terminal:</p>
+      <pre class="bg-gray-800 text-gray-100 p-4 rounded-lg"><code>npx nest generate module auth
+npx nest generate controller auth
+npx nest generate service auth</code></pre>
+      <p class="mt-4 text-sm font-semibold text-gray-800">Como funciona o <code>auth.service.ts</code>:</p>
+      <pre class="bg-gray-800 text-gray-100 p-4 rounded-lg"><code>async login(email: string, senhaLimpa: string) {
+  // 1. Acha o usuário
+  const user = await this.prisma.usuario.findUnique({ where: { email } });
+  
+  // 2. Se o usuário não existir, já bloqueia na porta
+  if (!user) {
+    throw new UnauthorizedException('Credenciais inválidas');
+  }
+  
+  // 3. Compara a senha digitada com a criptografada do banco
+  const senhaBateu = await bcrypt.compare(senhaLimpa, user.senha);
+  if (!senhaBateu) {
+    throw new UnauthorizedException('Credenciais inválidas');
+  }
+  
+  // 4. Monta o Payload e assina (Gera a pulseira)
+  const payload = { sub: user.id, email: user.email };
+  return {
+    access_token: this.jwtService.sign(payload),
+  };
+}</code></pre>
+
+      <div class="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <h3 class="font-semibold text-gray-800 mb-2">Entendendo a fabricação do Token:</h3>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700">
+          <li><strong>O que é o Payload?</strong> É a "bagagem" de dados abertos que vai viajar dentro do JWT. Usamos a sigla <code>sub</code> (Subject / Sujeito) para guardar o ID do usuário por ser um padrão mundial. Também podemos guardar o email. <strong>Atenção:</strong> Nunca coloque a senha aqui, pois o Payload pode ser lido por qualquer pessoa na internet!</li>
+          <li><strong>this.jwtService.sign(payload)</strong>: Esta é a "fábrica" em si. O NestJS pega o seu Payload, pega uma Palavra Secreta (que só o seu servidor conhece) e carimba tudo isso gerando a "Pulseira VIP" (o token gigante cheio de letras aleatórias).</li>
+          <li><strong>access_token</strong>: Retornamos o token em um formato JSON padronizado para o frontend receber, salvar e passar a usar em todas as requisições.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Passo 4: O Segurança (Guard & Strategy) -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">4</div>
+        <h2 class="text-xl font-semibold">Protegendo as Rotas (Guard)</h2>
+      </div>
+      <p class="text-gray-600 mb-4">Criamos um arquivo <code>jwt.strategy.ts</code> para validar a assinatura do Token usando uma chave secreta no arquivo <code>.env</code> (ex: <code>JWT_SECRET="minha-senha-super-secreta"</code>).</p>
+      <p class="text-gray-600 mb-4">Depois, para fechar a porta de qualquer Controller (como o de finanças), basta colocar um cadeado no topo do arquivo:</p>
+      <pre class="bg-gray-800 text-gray-100 p-4 rounded-lg"><code>import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+
+@Controller('financas')
+@UseGuards(JwtAuthGuard) // <-- ESSE É O CADEADO!
+export class FinancasController {
+  // Nenhuma rota aqui funciona mais sem o Bearer Token!
+}</code></pre>
+    </section>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Roteiro: JWT (Parte 2) - O Porteiro e os Cadeados</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    pre {
+      background-color: var(--sidebar);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.875rem;
+    }
+    pre code { color: #e5e7eb; }
+    .keyword { color: #f9a8d4; } /* rosa */
+    .string { color: #a7f3d0; } /* verde claro */
+    .function { color: #93c5fd; } /* azul claro */
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased p-6">
+  
+  <div class="max-w-4xl mx-auto space-y-8">
+    
+    <header class="text-center space-y-2">
+      <h1 class="text-3xl font-bold text-blue-600">Roteiro JWT: O Porteiro e os Cadeados</h1>
+      <p class="text-gray-600">Como trancar as suas rotas e bloquear usuários sem o Token</p>
+    </header>
+
+    <!-- Passo 1: A Regra do Porteiro -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">1</div>
+        <h2 class="text-xl font-semibold">Criando o Scanner (Strategy)</h2>
+      </div>
+      <p class="text-gray-600 mb-4">Crie um arquivo chamado <code>jwt.strategy.ts</code> dentro da pasta <code>src/auth/</code>. Esse arquivo é o "leitor de código de barras". Ele ensina o NestJS a extrair o token do cabeçalho Bearer e a usar a Palavra Secreta para validar a assinatura.</p>
+      
+      <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg"><code>import { ExtractJwt, Strategy } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor() {
+    super({
+      // Ensina a pegar o token do lugar certo (Header > Bearer)
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // Rejeita tokens expirados
+      ignoreExpiration: false,
+      // A mesma senha secreta do .env!
+      secretOrKey: process.env.JWT_SECRET, 
+    });
+  }
+
+  // Se o token for verdadeiro e válido, ele cai nessa função
+  async validate(payload: any) {
+    // O que você retornar aqui será pendurado no objeto da requisição (req.user)
+    return { usuarioId: payload.sub, email: payload.email };
+  }
+}</code></pre>
+    </section>
+
+    <!-- Passo 2: O Porteiro em Si -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">2</div>
+        <h2 class="text-xl font-semibold">Criando o Porteiro (Guard)</h2>
+      </div>
+      <p class="text-gray-600 mb-4">Crie um arquivo chamado <code>jwt-auth.guard.ts</code> na mesma pasta <code>src/auth/</code>. Esse arquivo é muito curto, ele é literalmente o "segurança fortão" que fica na porta interceptando a requisição.</p>
+      
+      <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg"><code>import { Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {}
+</code></pre>
+    </section>
+
+    <!-- Passo 3: Cadastrando no Módulo -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">3</div>
+        <h2 class="text-xl font-semibold">Registrando no AuthModule</h2>
+      </div>
+      <p class="text-gray-600 mb-4">Abra o seu <code>auth.module.ts</code>. O "RH" precisa saber que você contratou um novo segurança (a Strategy). Adicione a classe <code>JwtStrategy</code> na lista de <strong>providers</strong>.</p>
+      
+      <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg"><code>// ... imports normais ...
+import { JwtStrategy } from './jwt.strategy.js'; // Importe a Strategy!
+
+@Module({
+  imports: [ /* ... seus imports ... */ ],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy], // <-- Coloque a JwtStrategy AQUI!
+})
+export class AuthModule {}</code></pre>
+    </section>
+
+    <!-- Passo 4: Colocando os Cadeados -->
+    <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">4</div>
+        <h2 class="text-xl font-semibold">Trancando os Controllers e Usando o ID</h2>
+      </div>
+      <p class="text-gray-600 mb-4">Agora a mágica acontece. Escolha um Controller (ex: <code>financas.controller.ts</code>). Vamos colocar o cadeado no topo dele e mostrar como você pega o ID do usuário que acabou de passar pela porta!</p>
+      
+      <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg"><code>import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+
+@Controller('financas')
+@UseGuards(JwtAuthGuard) // <-- ESSE É O CADEADO GERAL DA PASTA FINANÇAS!
+export class FinancasController {
+  
+  @Post()
+  criarGasto(@Request() req, @Body() dados: QualquerDto) {
+    // 💡 O porteiro validou o JWT e "pendurou" os dados do usuário no objeto req!
+    const idDoUsuarioLogado = req.user.usuarioId;
+    
+    // Agora você pode passar esse ID para o seu Service salvar no banco certinho
+    return this.financasService.criar(idDoUsuarioLogado, dados);
+  }
+}</code></pre>
+    </section>
+
+  </div>
+</body>
+</html>
