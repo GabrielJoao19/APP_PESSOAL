@@ -8,15 +8,6 @@ import * as bcrypt from 'bcrypt'
 export class UsuariosService {
   constructor(private prisma: PrismaService) {}
 
-  async criarUsuario(dados: CriarUsuarioDto) {
-
-    const saltrounds = 10;
-    const senhaHasheada = await bcrypt.hash(dados.senha, saltrounds);
-    dados.senha = senhaHasheada;
-
-    return this.prisma.usuario.create({ data: dados });
-  }
-
   listarUsuarios() {
     return this.prisma.usuario.findMany({
       include: {
@@ -30,6 +21,20 @@ export class UsuariosService {
         investimentos: true
       }
     });
+  }
+
+  async criarUsuario(dados: CriarUsuarioDto) {
+
+    const saltrounds = 10;
+    const senhaHasheada = await bcrypt.hash(dados.senha, saltrounds);
+    dados.senha = senhaHasheada;
+
+    const usuarios = UsuariosService.listarUsuarios()
+    if (dados.email in usuarios){
+      throw new NotFoundException(`Usuário não encontrado`);
+    }
+    
+    return this.prisma.usuario.create({ data: dados });
   }
 
   async buscarUsuario(id: number) {
