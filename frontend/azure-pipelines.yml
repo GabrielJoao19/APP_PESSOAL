@@ -27,8 +27,8 @@ pr:
 variables:
   # Service Connection do Docker Hub configurada no Azure DevOps
   DOCKERHUB_CONNECTION: 'dockerhub-connection'
-  # Seu nome de usuário no Docker Hub (ex: joaogabriel)
-  DOCKERHUB_USERNAME: 'seuusuario'
+  # Seu nome de usuário no Docker Hub
+  DOCKERHUB_USERNAME: 'joaogabriel199'
   IMAGE_NAME: '$(DOCKERHUB_USERNAME)/lifeos-frontend'
 
   # Service Connections SSH para as VMs no Azure DevOps
