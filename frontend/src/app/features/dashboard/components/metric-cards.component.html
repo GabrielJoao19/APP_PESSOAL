@@ -1,0 +1,21 @@
+<div class="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Card 1: Peso Atual -->
+  <div class="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-4">
+    <div class="text-xs text-[#6B7280] uppercase tracking-wider mb-2 font-semibold">
+      Peso Atual
+    </div>
+    <div class="text-xl font-bold text-[#111827]">
+      {{ saudeService.pesoAtual() }} kg
+    </div>
+  </div>
+
+  <!-- Card 2: Limite Diário -->
+  <div class="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-4">
+    <div class="text-xs text-[#6B7280] uppercase tracking-wider mb-2 font-semibold">
+      Limite Diário (R$ 50,00)
+    </div>
+    <div class="text-xl font-bold text-[#10B981]">
+      Disponível: R$ 35,00
+    </div>
+  </div>
+</div>

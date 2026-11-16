@@ -5,6 +5,9 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
+  // Permite conexões do frontend
+  app.enableCors();
+
   // Mágica ativada: Todos os DTOs do sistema agora vão bloquear dados inválidos
   app.useGlobalPipes(new ValidationPipe());
 

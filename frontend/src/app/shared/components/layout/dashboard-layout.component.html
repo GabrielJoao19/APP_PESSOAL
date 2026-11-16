@@ -1,0 +1,12 @@
+<div class="flex h-screen w-screen overflow-hidden bg-[#FAFAFA]">
+  <!-- 1. Barra Lateral -->
+  <app-sidebar />
+
+  <!-- 2. Área de Conteúdo Principal -->
+  <main class="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center items-start">
+    <div class="w-full max-w-[1280px] bg-white rounded-[24px] shadow-sm border border-[#E5E7EB] overflow-hidden mb-16">
+      <app-header />
+      <router-outlet />
+    </div>
+  </main>
+</div>

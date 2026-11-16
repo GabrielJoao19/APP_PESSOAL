@@ -168,10 +168,29 @@ cd frontend
 npm start
 ```
 
-Pronto! A estrutura fundacional (O "esqueleto" e o sistema circulatório do seu App) está pronta. 
-A partir daqui, é a arquitetura clássica: 
-1. Criar o modelo no `schema.prisma`.
-2. Criar os endpoints no `NestJS` (Controllers/Services).
-3. Consumir e renderizar no `Angular`.
+## 6. Rodando com Docker (1 Comando Só! 🐳)
 
-Quando quiser que eu gere os blocos de código específicos (ex: _"Gere o componente Angular com aquele HTML do Balanço Diário e o SCSS"_ ou _"Gere o `schema.prisma` completo de todas as nossas regras de negócio"_), é só falar!
+Agora o projeto está totalmente "dockerizado"! Você não precisa mais abrir múltiplos terminais para o banco, o NestJS e o Angular.
+
+Basta abrir o terminal na raiz do projeto (`APP_PESSOAL`) e rodar:
+
+```bash
+docker compose up --build
+```
+
+### O que o Docker faz automaticamente:
+1. Sobe o container do **PostgreSQL 16** com volume persistente (seus dados não somem ao desligar).
+2. Aguarda o Postgres ficar 100% pronto (healthcheck).
+3. Compila o **Backend NestJS**, roda o `prisma db push` para criar todas as tabelas no banco de dados automaticamente e sobe a API na porta `3000`.
+4. Compila o **Frontend Angular**, gera a versão de produção e serve via servidor **Nginx** de alta performance na porta `4200` (e `80`).
+
+### Links de Acesso:
+- **Frontend (Aplicação LifeOS):** [http://localhost:4200](http://localhost:4200) ou [http://localhost](http://localhost)
+- **Backend (API NestJS):** [http://localhost:3000](http://localhost:3000)
+- **Banco de Dados (PostgreSQL):** Porta `5432` (`user: postgres`, `password: postgres`, `database: app_pessoal`)
+
+Para parar todos os containers:
+```bash
+docker compose down
+```
+

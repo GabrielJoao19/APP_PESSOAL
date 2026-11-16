@@ -1,0 +1,40 @@
+<div class="h-auto flex flex-col">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-base font-semibold text-[#111827]">
+      Balanço Diário
+    </h2>
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+      <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+      <path d="M7 21h10"/>
+      <path d="M12 3v18"/>
+      <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+    </svg>
+  </div>
+
+  <div class="bg-[#FAFAFA] border border-[#E5E7EB] rounded-xl p-5">
+    <div class="flex justify-between items-baseline mb-2">
+      <span class="text-sm text-[#6B7280] font-medium">Sua Nota Hoje</span>
+      <div class="text-4xl font-bold text-[#10B981] leading-none">
+        {{ scoreFinal() }}<span class="text-lg">%</span>
+      </div>
+    </div>
+
+    <!-- Barra de Progresso com Meta de 80% -->
+    <div class="w-full h-1.5 bg-[#E5E7EB] rounded-full mb-4 overflow-hidden relative">
+      <div class="absolute left-[80%] top-0 bottom-0 w-[2px] bg-black/15 z-10"></div>
+      <div class="h-full bg-[#10B981] transition-all duration-300" [style.width.%]="scoreFinal()"></div>
+    </div>
+
+    <div class="flex gap-2 w-full">
+      <div class="flex-1 flex justify-center items-center bg-[#D1FAE5] text-[#065F46] py-2 px-3 rounded-md font-bold text-sm">
+        +{{ percentualHabitos() }}%
+        <span class="text-[10px] font-medium ml-1">Hábitos</span>
+      </div>
+      <div class="flex-1 flex justify-center items-center bg-[#FEE2E2] text-[#991B1B] py-2 px-3 rounded-md font-bold text-sm">
+        -{{ totalPenalidades() }}%
+        <span class="text-[10px] font-medium ml-1">Erros</span>
+      </div>
+    </div>
+  </div>
+</div>

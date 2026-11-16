@@ -1,0 +1,74 @@
+<div class="h-full flex flex-col">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-base font-semibold text-[#111827] flex items-center gap-2">
+      Envelopes
+    </h2>
+    <div class="flex items-center gap-2">
+      <button (click)="mostrarFormulario.set(!mostrarFormulario())"
+              class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-2.5 py-1 rounded-md transition-colors cursor-pointer">
+        {{ mostrarFormulario() ? 'Fechar' : '+ Novo' }}
+      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Formulário de criação de Envelope -->
+  @if (mostrarFormulario()) {
+    <div class="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-xl flex flex-col gap-2">
+      <input [(ngModel)]="novoNome" placeholder="Nome do Envelope (ex: Mercado)"
+             class="px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400" />
+      <div class="flex gap-2">
+        <input type="number" [(ngModel)]="novoLimite" placeholder="Limite R$ (ex: 300)"
+               class="flex-1 px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400" />
+        <button (click)="salvarEnvelope()" [disabled]="!novoNome() || !novoLimite()"
+                class="bg-black text-white text-xs px-3 py-1.5 rounded-lg disabled:opacity-50 cursor-pointer font-medium">
+          Salvar
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="flex flex-col gap-4">
+    @for (env of financasService.envelopes(); track env.id) {
+      @let limite = env.limite ?? env.valor_total ?? 0;
+      @let sobra = limite - env.valor_gasto;
+      @let estourado = sobra < 0;
+      @let porcentagem = limite > 0 ? (env.valor_gasto / limite) * 100 : 0;
+
+      <div [class]="estourado
+        ? 'p-4 border border-[#FCA5A5] rounded-xl bg-[#FEF2F2] text-[#EF4444]'
+        : 'p-4 border border-[#E5E7EB] rounded-xl bg-[#FAFAFA] text-gray-900'">
+
+        <div class="flex justify-between items-baseline mb-2">
+          <span class="font-semibold text-sm">{{ env.nome }}</span>
+          <span [class]="estourado ? 'font-bold text-base text-[#EF4444]' : 'font-bold text-base text-gray-900'">
+            {{ estourado ? '-R$ ' + (sobra * -1 | number:'1.2-2') : 'R$ ' + (sobra | number:'1.2-2') }}
+          </span>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="w-full h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
+          <div [class]="estourado ? 'h-full bg-[#EF4444]' : (porcentagem > 70 ? 'h-full bg-[#F59E0B]' : 'h-full bg-[#10B981]')"
+               [style.width.%]="porcentagem > 100 ? 100 : porcentagem"></div>
+        </div>
+
+        <!-- Subtotais -->
+        <div class="flex justify-between text-xs text-[#6B7280] mt-2">
+          <span>Total: R$ {{ limite }}</span>
+          <span>Gasto: R$ {{ env.valor_gasto }}</span>
+          <span [class]="estourado ? 'font-bold text-[#991B1B]' : 'font-semibold text-[#111827]'">
+            {{ estourado ? 'Estourado!' : 'Sobra: R$ ' + sobra }}
+          </span>
+        </div>
+      </div>
+    } @empty {
+      <div class="p-6 text-center text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl">
+        Nenhum envelope cadastrado ainda.
+      </div>
+    }
+  </div>
+</div>

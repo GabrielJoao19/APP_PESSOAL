@@ -1,0 +1,68 @@
+services:
+  # -----------------------------------------------------------
+  # 1. Container do Banco de Dados PostgreSQL (Isolado na rede interna)
+  # -----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: lifeos-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-app_pessoal}
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lifeos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-app_pessoal}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # -----------------------------------------------------------
+  # 2. Container do Backend NestJS + Prisma ORM (Isolado na rede interna)
+  # -----------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lifeos-backend
+    restart: always
+    expose:
+      - "3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-app_pessoal}?schema=public"
+      JWT_SECRET: ${JWT_SECRET:-ben10}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - lifeos-network
+
+  # -----------------------------------------------------------
+  # 3. Container do Frontend Angular + Nginx Proxy Reverso (Entrada Pública)
+  # -----------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lifeos-frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - lifeos-network
+
+networks:
+  lifeos-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,0 +1,39 @@
+<div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+  <!-- 1. Quick Metrics (Largura Total) -->
+  <app-metric-cards class="col-span-full" />
+
+  <!-- 2. Envelopes (Coluna 1) -->
+  <div class="lg:row-span-2">
+    <app-envelopes-widget />
+  </div>
+
+  <!-- 3. Balanço Diário (Coluna 2, Linha 1) -->
+  <div>
+    <app-daily-score-widget />
+  </div>
+
+  <!-- 4. Resumo do Mês (Coluna 2, Linha 2) -->
+  <div>
+    <app-monthly-summary-widget />
+  </div>
+
+  <!-- 5. Conquistas do Dia (Coluna 1, Linha 3) -->
+  <div>
+    <app-habits-widget />
+  </div>
+
+  <!-- 6. Registro de Erro (Coluna 2, Linha 3) -->
+  <div>
+    <app-mistakes-widget />
+  </div>
+
+  <!-- 7. Diário de Hoje (Coluna 1, Linha 4) -->
+  <div>
+    <app-journal-widget />
+  </div>
+
+  <!-- 8. Calendário de Desempenho (Coluna 2, Linha 4) -->
+  <div>
+    <app-performance-calendar-widget />
+  </div>
+</div>

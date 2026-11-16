@@ -1,0 +1,64 @@
+<div class="h-full flex flex-col">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-base font-semibold text-[#111827]">
+      Conquistas do Dia
+    </h2>
+    <div class="flex items-center gap-2">
+      <button (click)="mostrarInput.set(!mostrarInput())"
+              class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-2.5 py-1 rounded-md transition-colors cursor-pointer">
+        {{ mostrarInput() ? 'Fechar' : '+ Nova' }}
+      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Formulário inline de nova tarefa -->
+  @if (mostrarInput()) {
+    <div class="mb-4 flex gap-2">
+      <input [(ngModel)]="novoTitulo" (keyup.enter)="adicionarTarefa()"
+             placeholder="Digite um novo hábito ou tarefa..."
+             class="flex-1 px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400" />
+      <button (click)="adicionarTarefa()" [disabled]="!novoTitulo().trim()"
+              class="bg-black text-white text-xs px-3 py-1.5 rounded-lg disabled:opacity-50 cursor-pointer font-medium">
+        Adicionar
+      </button>
+    </div>
+  }
+
+  <div class="flex flex-col gap-3">
+    @for (tarefa of produtividadeService.tarefas(); track tarefa.id) {
+      @let pontos = tarefa.valor_diario ?? tarefa.pontos ?? 10;
+      <div (click)="produtividadeService.alternarTarefa(tarefa.id)"
+           class="flex items-center justify-between py-3 border-b border-[#E5E7EB] last:border-b-0 cursor-pointer select-none group">
+
+        <div class="flex items-center gap-3">
+          <!-- Checkbox -->
+          <div [class]="tarefa.concluida
+                 ? 'w-[22px] h-[22px] bg-black border-2 border-black rounded-[6px] flex items-center justify-center text-white transition-all'
+                 : 'w-[22px] h-[22px] border-2 border-[#E5E7EB] rounded-[6px] flex items-center justify-center text-transparent group-hover:border-gray-400 transition-all'">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+
+          <!-- Título -->
+          <span [class]="tarefa.concluida ? 'text-sm font-medium text-[#6B7280] line-through' : 'text-sm font-medium text-[#111827]'">
+            {{ tarefa.titulo }}
+          </span>
+        </div>
+
+        <!-- Pontos -->
+        <span [class]="tarefa.concluida ? 'text-xs font-semibold text-[#10B981]' : 'text-xs font-semibold text-[#6B7280]'">
+          +{{ pontos }}%
+        </span>
+      </div>
+    } @empty {
+      <div class="p-6 text-center text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl">
+        Nenhuma tarefa cadastrada. Adicione uma acima!
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,160 @@
+# =============================================================================
+# Pipeline 2 (Frontend): Azure DevOps CI/CD -> Docker Hub -> Homologação & Produção
+# =============================================================================
+
+trigger:
+  branches:
+    include:
+      - main
+      - master
+      - homolog
+      - develop
+  paths:
+    include:
+      - frontend/**
+
+pr:
+  branches:
+    include:
+      - main
+      - master
+      - homolog
+      - develop
+  paths:
+    include:
+      - frontend/**
+
+variables:
+  # Service Connection do Docker Hub configurada no Azure DevOps
+  DOCKERHUB_CONNECTION: 'dockerhub-connection'
+  # Seu nome de usuário no Docker Hub (ex: joaogabriel)
+  DOCKERHUB_USERNAME: 'seuusuario'
+  IMAGE_NAME: '$(DOCKERHUB_USERNAME)/lifeos-frontend'
+
+  # Service Connections SSH para as VMs no Azure DevOps
+  SSH_HOMOLOG_CONNECTION: 'azure-vm-homolog-ssh'
+  SSH_PROD_CONNECTION: 'azure-vm-prod-ssh'
+
+  NODE_VERSION: '24.x'
+
+stages:
+  # ===========================================================================
+  # STAGE 1: CI Frontend - Testes (Jasmine) + Build & Push para o Docker Hub
+  # ===========================================================================
+  - stage: CI_Frontend
+    displayName: '1. CI Frontend - Testes & Push Docker Hub'
+    jobs:
+      - job: TestBuildAndPush
+        displayName: 'Testar Angular e Publicar Imagem Nginx no Docker Hub'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            displayName: 'Clonar repositório'
+
+          - task: NodeTool@0
+            displayName: 'Instalar Node.js $(NODE_VERSION)'
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+
+          - script: |
+              cd frontend
+              npm ci
+            displayName: 'Instalar dependências do Frontend'
+
+          - script: |
+              cd frontend
+              npx ng test --watch=false --browsers=ChromeHeadless
+            displayName: 'Executar Testes Unitários do Frontend (Headless Chrome)'
+
+          - task: Docker@2
+            displayName: 'Build e Push para o Docker Hub ($(IMAGE_NAME))'
+            inputs:
+              containerRegistry: '$(DOCKERHUB_CONNECTION)'
+              repository: '$(IMAGE_NAME)'
+              command: 'buildAndPush'
+              Dockerfile: 'frontend/Dockerfile'
+              buildContext: 'frontend'
+              tags: |
+                $(Build.BuildId)
+                latest
+
+  # ===========================================================================
+  # STAGE 2: CD Homologação - Deploy do Container Frontend/Nginx em Homologação
+  # ===========================================================================
+  - stage: CD_Homologacao
+    displayName: '2. CD - Ambiente de Homologação'
+    dependsOn: CI_Frontend
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/homolog', 'refs/heads/develop', 'refs/heads/main', 'refs/heads/master'))
+    jobs:
+      - deployment: DeployFrontendHomolog
+        displayName: 'Atualizar Frontend/Nginx em Homologação (Porta 8080)'
+        environment: 'homologacao'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: SSH@0
+                  displayName: 'SSH Homologação: Pull do Docker Hub e docker run na Porta 8080'
+                  inputs:
+                    sshEndpoint: '$(SSH_HOMOLOG_CONNECTION)'
+                    runOptions: 'inline'
+                    inline: |
+                      set -e
+                      docker network inspect lifeos-homolog-net >/dev/null 2>&1 || docker network create lifeos-homolog-net
+
+                      docker pull $(IMAGE_NAME):$(Build.BuildId)
+                      docker stop lifeos-frontend-hml || true
+                      docker rm lifeos-frontend-hml || true
+
+                      docker run -d \
+                        --name lifeos-frontend-hml \
+                        --restart always \
+                        --network lifeos-homolog-net \
+                        -p 8080:80 \
+                        $(IMAGE_NAME):$(Build.BuildId)
+
+                      docker image prune -f
+                    failOnStdErr: false
+
+  # ===========================================================================
+  # STAGE 3: CD Produção - Deploy do Container Frontend/Nginx em Produção (Porta 80)
+  # ===========================================================================
+  - stage: CD_Producao
+    displayName: '3. CD - Ambiente de Produção'
+    dependsOn: CD_Homologacao
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/main', 'refs/heads/master'))
+    jobs:
+      - deployment: DeployFrontendProd
+        displayName: 'Atualizar Frontend/Nginx em Produção (Porta 80)'
+        environment: 'producao'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: SSH@0
+                  displayName: 'SSH Produção: Pull do Docker Hub e docker run na Porta 80'
+                  inputs:
+                    sshEndpoint: '$(SSH_PROD_CONNECTION)'
+                    runOptions: 'inline'
+                    inline: |
+                      set -e
+                      docker network inspect lifeos-prod-net >/dev/null 2>&1 || docker network create lifeos-prod-net
+
+                      docker pull $(IMAGE_NAME):$(Build.BuildId)
+                      docker stop lifeos-frontend || true
+                      docker rm lifeos-frontend || true
+
+                      docker run -d \
+                        --name lifeos-frontend \
+                        --restart always \
+                        --network lifeos-prod-net \
+                        -p 80:80 \
+                        $(IMAGE_NAME):$(Build.BuildId)
+
+                      docker image prune -f
+                    failOnStdErr: false
