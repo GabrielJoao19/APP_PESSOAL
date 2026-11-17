@@ -6,6 +6,7 @@ Este documento centraliza toda a arquitetura de **Infraestrutura, Containers, Pi
 > **Atualização Contínua & Guia de Implementação do Zero:**
 > * Este documento é mantido automaticamente pela skill [`devops-doc-updater`](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/.agents/skills/devops-doc-updater/SKILL.md) sempre que houver alterações em Dockerfiles, Nginx, Pipelines ou infraestrutura.
 > * Para entender **a ordem lógica de raciocínio passo a passo (do Passo 1 ao Passo 7)** para replicar esta arquitetura do zero em qualquer outro projeto, consulte o [**GUIA_PASSO_A_PASSO_DEVOPS.md**](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/GUIA_PASSO_A_PASSO_DEVOPS.md).
+> * Para consultar a explicação detalhada de **cada comando Docker e das redes virtuais (`--network` e `--network-alias`)**, veja o [**COMANDOS_DOCKER.md**](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/COMANDOS_DOCKER.md).
 
 ---
 
