@@ -20,7 +20,9 @@ flowchart TD
 
     DOC5["5️⃣ COMANDOS_DOCKER.md\n🐳 O que faz cada comando Docker e Rede?\nExplicação de docker network, --network-alias,\ndocker pull, stop, rm e docker run via SSH."]
 
-    START --> DOC1 --> DOC2 --> DOC3 --> DOC4 --> DOC5
+    DOC6["6️⃣ feito.md\n✅ Tudo que está feito de Infra + Guia de Testes\nChecklist completo de DevOps e os 6 Tipos de Testes\n(Unitários, Integração, E2E, Carga, Segurança e Mobile)."]
+
+    START --> DOC1 --> DOC2 --> DOC3 --> DOC4 --> DOC5 --> DOC6
 ```
 
 ---
@@ -34,6 +36,7 @@ flowchart TD
 | **3º** | [**GUIA_PASSO_A_PASSO_DEVOPS.md**](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/GUIA_PASSO_A_PASSO_DEVOPS.md) | Roteiro mental em **7 passos lógicos** explicando por onde começar e como implementar essa mesma arquitetura DevOps do zero em qualquer outro projeto sem IA. | Quando quiser **entender a lógica de construção** ou replicar em outro projeto. |
 | **4º** | [**ARQUITETURA_DEVOPS.md**](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/ARQUITETURA_DEVOPS.md) | Visão arquitetural com **Fluxograma Resumido**, **Fluxograma Detalhado**, separação de Homologação (`:8080`) e Produção (`:80`) e integração com o Docker Hub (`joaogabriel199`). | Quando quiser **visualizar o desenho completo** da infraestrutura CI/CD. |
 | **5º** | [**COMANDOS_DOCKER.md**](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/COMANDOS_DOCKER.md) | Explicação detalhada das **redes virtuais do Docker** (`lifeos-prod-net` e `lifeos-homolog-net`), apelidos de DNS (`--network-alias`) e todos os comandos executados via SSH na VPS. | Quando tiver dúvida sobre **como os 3 containers conversam** ou sobre um comando Docker específico. |
+| **6º** | [**feito.md**](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/feito.md) | Consolidação de **tudo o que já está pronto de infraestrutura** + **Guia dos 6 Tipos de Testes** (Unitários, Integração/API, E2E, Performance/Carga, Segurança SAST/DAST e Mobile). | Para revisar **o status atual da infra** e guiar a implementação dos **testes avançados**. |
 
 ---
 
