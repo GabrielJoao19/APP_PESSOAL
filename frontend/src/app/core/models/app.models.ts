@@ -79,3 +79,21 @@ export interface CategoriaFalha {
   nome: string;
   valor: number;
 }
+
+export interface TipoInvestimento {
+  id: number;
+  nome: string;
+  taxa: number;
+  prazo_saque: string;
+}
+
+export interface Investimento {
+  id: number;
+  nome: string;
+  tipo: string;
+  valor_investido: number;
+  valor_atual: number;
+  tipoInvestimentoId: number;
+  usuarioId: number;
+  tipoInvestimento?: TipoInvestimento;
+}

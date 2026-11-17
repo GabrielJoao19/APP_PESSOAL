@@ -42,21 +42,29 @@ export class ProdutividadeService {
 
     const novoStatus = !tarefaAtual.concluida;
 
-    // Atualização otimista via Signal
     this.tarefas.update(lista =>
       lista.map(t => (t.id === id ? { ...t, concluida: novoStatus } : t))
     );
 
-    // Persistência no backend
-    this.http.patch(`${this.apiUrl}/tarefas/${id}`, { concluida: novoStatus }).subscribe();
+    this.http.patch(`${this.apiUrl}/tarefas/${id}`, { concluida: novoStatus }).subscribe({ error: () => {} });
+  }
+
+  deletarTarefa(id: number) {
+    return this.http.delete(`${this.apiUrl}/tarefas/${id}`).pipe(
+      tap(() => {
+        this.tarefas.update(lista => lista.filter(t => t.id !== id));
+      })
+    );
   }
 
   carregarDiarios() {
     return this.http.get<Diario[]>(`${this.apiUrl}/diarios`).pipe(
       tap(diarios => {
-        if (diarios && diarios.length > 0) {
+        if (diarios) {
           this.diarios.set(diarios);
-          this.ultimoDiario.set(diarios[0].conteudo);
+          if (diarios.length > 0) {
+            this.ultimoDiario.set(diarios[0].conteudo);
+          }
         }
       })
     );
@@ -71,6 +79,14 @@ export class ProdutividadeService {
       tap(novo => {
         this.ultimoDiario.set(novo.conteudo);
         this.diarios.update(lista => [novo, ...lista]);
+      })
+    );
+  }
+
+  deletarDiario(id: number) {
+    return this.http.delete(`${this.apiUrl}/diarios/${id}`).pipe(
+      tap(() => {
+        this.diarios.update(lista => lista.filter(d => d.id !== id));
       })
     );
   }

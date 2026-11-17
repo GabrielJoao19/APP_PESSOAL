@@ -21,6 +21,8 @@
       <input [(ngModel)]="novoTitulo" (keyup.enter)="adicionarTarefa()"
              placeholder="Digite um novo hábito ou tarefa..."
              class="flex-1 px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400" />
+      <input type="number" [(ngModel)]="novosPontos" min="5" max="100" title="Pontos (%)"
+             class="w-16 px-2 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:outline-none" />
       <button (click)="adicionarTarefa()" [disabled]="!novoTitulo().trim()"
               class="bg-black text-white text-xs px-3 py-1.5 rounded-lg disabled:opacity-50 cursor-pointer font-medium">
         Adicionar
@@ -30,7 +32,7 @@
 
   <div class="flex flex-col gap-3">
     @for (tarefa of produtividadeService.tarefas(); track tarefa.id) {
-      @let pontos = tarefa.valor_diario ?? tarefa.pontos ?? 10;
+      @let pontos = tarefa.valor_diario || 10;
       <div (click)="produtividadeService.alternarTarefa(tarefa.id)"
            class="flex items-center justify-between py-3 border-b border-[#E5E7EB] last:border-b-0 cursor-pointer select-none group">
 
@@ -50,10 +52,17 @@
           </span>
         </div>
 
-        <!-- Pontos -->
-        <span [class]="tarefa.concluida ? 'text-xs font-semibold text-[#10B981]' : 'text-xs font-semibold text-[#6B7280]'">
-          +{{ pontos }}%
-        </span>
+        <div class="flex items-center gap-2">
+          <!-- Pontos -->
+          <span [class]="tarefa.concluida ? 'text-xs font-semibold text-[#10B981]' : 'text-xs font-semibold text-[#6B7280]'">
+            +{{ pontos }}%
+          </span>
+          <button (click)="removerTarefa(tarefa.id, $event)"
+                  title="Excluir hábito"
+                  class="text-gray-400 hover:text-red-600 text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+            ✕
+          </button>
+        </div>
       </div>
     } @empty {
       <div class="p-6 text-center text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl">

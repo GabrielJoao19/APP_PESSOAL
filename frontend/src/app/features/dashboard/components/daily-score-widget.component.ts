@@ -22,7 +22,7 @@ export class DailyScoreWidgetComponent {
 
   public totalPenalidades = computed(() => {
     const falhas = this.falhasService.falhas();
-    return falhas.reduce((acc, f) => acc + (f.penalidade || 0), 0);
+    return falhas.reduce((acc, f) => acc + (f.valor_diario ?? f.penalidade ?? 0), 0);
   });
 
   public scoreFinal = computed(() => {

@@ -16,6 +16,7 @@ export class HabitsWidgetComponent {
 
   public mostrarInput = signal(false);
   public novoTitulo = signal('');
+  public novosPontos = signal<number>(15);
 
   adicionarTarefa() {
     if (!this.novoTitulo().trim()) return;
@@ -23,11 +24,19 @@ export class HabitsWidgetComponent {
     const user = this.authService.currentUser();
     const userId = user?.id || 1;
 
-    this.produtividadeService.criarTarefa(this.novoTitulo().trim(), 15, userId).subscribe({
-      next: () => {
-        this.novoTitulo.set('');
-        this.mostrarInput.set(false);
-      }
-    });
+    this.produtividadeService
+      .criarTarefa(this.novoTitulo().trim(), Number(this.novosPontos()) || 15, userId)
+      .subscribe({
+        next: () => {
+          this.novoTitulo.set('');
+          this.novosPontos.set(15);
+          this.mostrarInput.set(false);
+        }
+      });
+  }
+
+  removerTarefa(id: number, event: Event) {
+    event.stopPropagation();
+    this.produtividadeService.deletarTarefa(id).subscribe();
   }
 }

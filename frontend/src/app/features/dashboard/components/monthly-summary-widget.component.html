@@ -20,13 +20,15 @@
       <div class="h-full w-[54%] bg-[#10B981]"></div>
     </div>
 
-    <!-- Orçamento Global do Mês -->
+    <!-- Orçamento Global do Mês (Dinâmico a partir dos Envelopes) -->
     <div class="flex justify-between items-baseline mb-2">
-      <span class="font-semibold text-xs text-gray-800">Gasto Geral do Mês</span>
-      <span class="font-bold text-xs text-[#F59E0B]">R$ 1.850 / 3.000</span>
+      <span class="font-semibold text-xs text-gray-800">Gasto Geral dos Envelopes</span>
+      <span class="font-bold text-xs text-[#F59E0B]">
+        R$ {{ financasService.totalGastoMes() | number:'1.0-0' }} / {{ financasService.totalOrcamentoMes() | number:'1.0-0' }}
+      </span>
     </div>
     <div class="w-full h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
-      <div class="h-full w-[61%] bg-[#F59E0B]"></div>
+      <div class="h-full bg-[#F59E0B] transition-all duration-300" [style.width.%]="percentualOrcamento()"></div>
     </div>
   </div>
 </div>

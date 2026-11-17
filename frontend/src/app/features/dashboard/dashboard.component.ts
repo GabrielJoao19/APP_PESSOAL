@@ -12,7 +12,6 @@ import { FinancasService } from '../financas/services/financas.service';
 import { ProdutividadeService } from '../produtividade/services/produtividade.service';
 import { FalhasService } from '../falhas/services/falhas.service';
 import { SaudeService } from '../saude/services/saude.service';
-import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,7 +30,6 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  private authService = inject(AuthService);
   private financasService = inject(FinancasService);
   private produtividadeService = inject(ProdutividadeService);
   private falhasService = inject(FalhasService);
@@ -43,9 +41,14 @@ export class DashboardComponent implements OnInit {
 
   private carregarDadosDoBanco(): void {
     this.financasService.carregarEnvelopes().subscribe({ error: () => {} });
+    this.financasService.carregarGastos().subscribe({ error: () => {} });
+    this.financasService.carregarMetasFinanceiras().subscribe({ error: () => {} });
+    this.financasService.carregarInvestimentos().subscribe({ error: () => {} });
     this.produtividadeService.carregarTarefas().subscribe({ error: () => {} });
     this.produtividadeService.carregarDiarios().subscribe({ error: () => {} });
     this.falhasService.carregarFalhas().subscribe({ error: () => {} });
+    this.falhasService.carregarCategorias().subscribe({ error: () => {} });
+    this.saudeService.carregarMetas().subscribe({ error: () => {} });
     this.saudeService.carregarHistorico().subscribe({ error: () => {} });
   }
 }

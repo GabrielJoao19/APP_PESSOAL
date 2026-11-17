@@ -38,10 +38,25 @@ export class FinancasService {
 
   // --- Gasto ---
   async criarGasto(dados: CriarGastoDto) {
-    return this.prisma.gasto.create({ data: dados, include: { envelope: true, usuario: true } });
+    const gasto = await this.prisma.gasto.create({
+      data: dados,
+      include: { envelope: true, usuario: true },
+    });
+    if (dados.envelopeId && dados.valor) {
+      await this.prisma.envelope
+        .update({
+          where: { id: dados.envelopeId },
+          data: { valor_gasto: { increment: dados.valor } },
+        })
+        .catch(() => {});
+    }
+    return gasto;
   }
   async listarGastos() {
-    return this.prisma.gasto.findMany({ include: { envelope: true, usuario: true } });
+    return this.prisma.gasto.findMany({
+      include: { envelope: true, usuario: true },
+      orderBy: { criadoEm: 'desc' },
+    });
   }
   async buscarGasto(id: number) {
     const gasto = await this.prisma.gasto.findUnique({ where: { id }, include: { envelope: true, usuario: true } });
@@ -53,8 +68,17 @@ export class FinancasService {
     return this.prisma.gasto.update({ where: { id }, data: dados });
   }
   async deletarGasto(id: number) {
-    await this.buscarGasto(id);
-    return this.prisma.gasto.delete({ where: { id } });
+    const gasto = await this.buscarGasto(id);
+    const deletado = await this.prisma.gasto.delete({ where: { id } });
+    if (gasto.envelopeId && gasto.valor) {
+      await this.prisma.envelope
+        .update({
+          where: { id: gasto.envelopeId },
+          data: { valor_gasto: { decrement: gasto.valor } },
+        })
+        .catch(() => {});
+    }
+    return deletado;
   }
 
   // --- TipoInvestimento ---

@@ -62,6 +62,22 @@ export class AuthService {
     });
   }
 
+  atualizarPerfil(id: number, dados: Partial<Usuario> & { senha?: string }): Observable<Usuario> {
+    return this.http.patch<Usuario>(`${this.apiUrl}/usuarios/${id}`, dados).pipe(
+      tap(atualizado => {
+        const atual = this.currentUser();
+        const novoUser: Usuario = {
+          id: atualizado.id ?? atual?.id ?? id,
+          nome: atualizado.nome ?? dados.nome ?? atual?.nome ?? '',
+          email: atualizado.email ?? dados.email ?? atual?.email ?? '',
+          limite_diario: atualizado.limite_diario ?? dados.limite_diario ?? atual?.limite_diario ?? 50
+        };
+        localStorage.setItem('lifeos_user', JSON.stringify(novoUser));
+        this.currentUser.set(novoUser);
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem('lifeos_token');
     localStorage.removeItem('lifeos_user');

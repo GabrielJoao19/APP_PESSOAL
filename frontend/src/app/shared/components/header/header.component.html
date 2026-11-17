@@ -6,10 +6,12 @@
     </h1>
   </div>
 
-  <div class="bg-[#FAFAFA] border border-[#E5E7EB] px-4 py-2 rounded-2xl font-semibold text-lg flex items-center gap-2 text-[#10B981] shadow-xs">
+  <div [class]="scoreGlobal() >= 70
+        ? 'bg-[#FAFAFA] border border-[#E5E7EB] px-4 py-2 rounded-2xl font-semibold text-lg flex items-center gap-2 text-[#10B981] shadow-xs'
+        : 'bg-[#FAFAFA] border border-[#E5E7EB] px-4 py-2 rounded-2xl font-semibold text-lg flex items-center gap-2 text-[#F59E0B] shadow-xs'">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
     </svg>
-    <span>85%</span>
+    <span>{{ scoreGlobal() }}%</span>
   </div>
 </header>

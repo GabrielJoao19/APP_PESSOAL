@@ -3,20 +3,55 @@
     <h2 class="text-base font-semibold text-[#111827]">
       Registro de Erro
     </h2>
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-      <line x1="12" x2="12" y1="9" y2="13"/>
-      <line x1="12" x2="12.01" y1="17" y2="17"/>
-    </svg>
+    <div class="flex items-center gap-2">
+      <button (click)="mostrarInput.set(!mostrarInput())"
+              class="text-xs bg-red-50 hover:bg-red-100 text-red-700 font-medium px-2.5 py-1 rounded-md transition-colors cursor-pointer">
+        {{ mostrarInput() ? 'Fechar' : '+ Registrar Erro' }}
+      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#6B7280]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+        <line x1="12" x2="12" y1="9" y2="13"/>
+        <line x1="12" x2="12.01" y1="17" y2="17"/>
+      </svg>
+    </div>
   </div>
+
+  @if (mostrarInput()) {
+    <div class="mb-4 p-3 bg-red-50/50 border border-red-200 rounded-xl flex flex-col gap-2">
+      <input [(ngModel)]="novaDescricao" (keyup.enter)="adicionarFalha()"
+             placeholder="Qual deslize aconteceu hoje? (ex: Furei a dieta)"
+             class="px-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-red-400" />
+      <div class="flex gap-2 items-center">
+        <span class="text-xs text-gray-600">Penalidade (%):</span>
+        <input type="number" [(ngModel)]="novaPenalidade" min="5" max="100"
+               class="w-20 px-2.5 py-1 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none" />
+        <button (click)="adicionarFalha()" [disabled]="!novaDescricao().trim()"
+                class="ml-auto bg-[#EF4444] hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg disabled:opacity-50 cursor-pointer font-medium">
+          Registrar
+        </button>
+      </div>
+    </div>
+  }
 
   <div class="border border-[#E5E7EB] rounded-xl overflow-hidden bg-white">
     @for (falha of falhasService.falhas(); track falha.id) {
-      <div class="flex items-center justify-between p-3.5 border-b border-[#E5E7EB] last:border-b-0 hover:bg-[#FAFAFA] transition-colors cursor-pointer">
+      @let penalidade = falha.valor_diario || falha.penalidade || 15;
+      <div class="flex items-center justify-between p-3.5 border-b border-[#E5E7EB] last:border-b-0 hover:bg-[#FAFAFA] transition-colors group">
         <span class="text-sm font-medium text-[#111827]">{{ falha.descricao }}</span>
-        <span class="bg-[#FEE2E2] text-[#EF4444] px-2 py-1 rounded text-xs font-semibold">
-          -{{ falha.penalidade }}%
-        </span>
+        <div class="flex items-center gap-2">
+          <span class="bg-[#FEE2E2] text-[#EF4444] px-2 py-1 rounded text-xs font-semibold">
+            -{{ penalidade }}%
+          </span>
+          <button (click)="removerFalha(falha.id, $event)"
+                  title="Remover registro"
+                  class="text-gray-400 hover:text-red-600 text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+            ✕
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="p-6 text-center text-xs text-emerald-600 font-medium">
+        Zero erros registrados hoje! Excelente disciplina.
       </div>
     }
   </div>

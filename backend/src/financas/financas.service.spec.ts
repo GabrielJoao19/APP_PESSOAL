@@ -12,7 +12,7 @@ describe('FinancasService', () => {
         create: vi.fn(),
         findMany: vi.fn(),
         findUnique: vi.fn(),
-        update: vi.fn(),
+        update: vi.fn().mockResolvedValue({}),
         delete: vi.fn(),
       },
       gasto: {

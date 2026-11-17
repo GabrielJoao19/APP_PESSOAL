@@ -33,8 +33,17 @@ export class SaudeService {
   }
 
   // --- Historico Fitness ---
-  criarHistoricoFitness(dados: CreateHistoricoFitnessDto) {
-    return this.prisma.historicoFitness.create({ data: dados });
+  async criarHistoricoFitness(dados: CreateHistoricoFitnessDto) {
+    const registro = await this.prisma.historicoFitness.create({ data: dados });
+    if (dados.metaId && dados.valor_registrado !== undefined) {
+      await this.prisma.meta_Fitness
+        .update({
+          where: { id: dados.metaId },
+          data: { valor_atual: dados.valor_registrado },
+        })
+        .catch(() => {});
+    }
+    return registro;
   }
 
   listarHistoricosFitness() {
