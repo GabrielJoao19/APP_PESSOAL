@@ -90,7 +90,7 @@ Executado na [backend/azure-pipelines.yml](file:///c:/Users/Joao%20Gabriel/Deskt
 
 ```bash
 # 1. Baixa a imagem recém-compilada do seu Docker Hub com a tag do Build
-docker pull joaogabriel199/lifeos-backend:$(Build.BuildId)
+docker pull joaogabriel199/app-pessoal-backend:$(Build.BuildId)
 
 # 2. Para e remove o container antigo do Backend (o "|| true" evita erro no 1º deploy)
 docker stop lifeos-backend || true
@@ -105,7 +105,7 @@ docker run -d \
   -e PORT=3000 \
   -e DATABASE_URL="postgresql://$(POSTGRES_USER_PROD):$(POSTGRES_PASSWORD_PROD)@postgres:5432/app_pessoal?schema=public" \
   -e JWT_SECRET="$(JWT_SECRET_PROD)" \
-  joaogabriel199/lifeos-backend:$(Build.BuildId)
+  joaogabriel199/app-pessoal-backend:$(Build.BuildId)
 ```
 
 | Flag / Parâmetro | O que faz |
@@ -121,7 +121,7 @@ Executado na [frontend/azure-pipelines.yml](file:///c:/Users/Joao%20Gabriel/Desk
 
 ```bash
 # 1. Baixa a imagem nova do Frontend/Nginx do seu Docker Hub
-docker pull joaogabriel199/lifeos-frontend:$(Build.BuildId)
+docker pull joaogabriel199/app-pessoal-frontend:$(Build.BuildId)
 
 # 2. Para e remove o container antigo do Frontend
 docker stop lifeos-frontend || true
@@ -133,7 +133,7 @@ docker run -d \
   --restart always \
   --network lifeos-prod-net \
   -p 80:80 \
-  joaogabriel199/lifeos-frontend:$(Build.BuildId)
+  joaogabriel199/app-pessoal-frontend:$(Build.BuildId)
 ```
 
 | Flag / Parâmetro | O que faz |

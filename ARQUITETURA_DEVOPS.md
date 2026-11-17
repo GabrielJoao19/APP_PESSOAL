@@ -60,9 +60,9 @@ flowchart TB
         end
     end
 
-    subgraph HUB ["🐳 3. Docker Hub (Repositório de Imagens Imutáveis)"]
-        IMG_FE[("📦 joaogabriel199/lifeos-frontend\nTags: :BuildId, :latest")]
-        IMG_BE[("📦 joaogabriel199/lifeos-backend\nTags: :BuildId, :latest")]
+    subgraph HUB ["🐳 3. Docker Hub (Repositórios de joaogabriel199)"]
+        IMG_FE[("📦 joaogabriel199/app-pessoal-frontend\nTags: :BuildId, :latest")]
+        IMG_BE[("📦 joaogabriel199/app-pessoal-backend\nTags: :BuildId, :latest")]
     end
 
     subgraph AZURE_VM ["☁️ 4. VM da Azure (Execução via Containers Independentes sem Docker Compose)"]
@@ -113,12 +113,12 @@ Em produção e homologação, **não usamos `docker-compose.yml`**. Cada camada
 ### 2.2. As Duas Pipelines no Azure DevOps
 * **Pipeline Backend ([backend/azure-pipelines.yml](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/backend/azure-pipelines.yml)):**
   * **Gatilho (`trigger`):** alterações dentro de `backend/**` nas branches `homolog`, `develop`, `main` ou `master`.
-  * **Stage 1 (CI):** instala dependências, gera o Prisma Client, roda os testes unitários com **Vitest** (`npm test`) e publica a imagem `joaogabriel199/lifeos-backend` no **Docker Hub**.
+  * **Stage 1 (CI):** instala dependências, gera o Prisma Client, roda os testes unitários com **Vitest** (`npm test`) e publica a imagem `joaogabriel199/app-pessoal-backend:$(Build.BuildId)` no **Docker Hub**.
   * **Stage 2 (CD Homologação):** conecta via SSH e atualiza o container `lifeos-backend-hml` no ambiente `homologacao`.
   * **Stage 3 (CD Produção):** exclusivo para `main`/`master`, conecta via SSH e atualiza o container `lifeos-backend` no ambiente `producao`.
 * **Pipeline Frontend ([frontend/azure-pipelines.yml](file:///c:/Users/Joao%20Gabriel/Desktop/APP_PESSOAL/APP_PESSOAL/frontend/azure-pipelines.yml)):**
   * **Gatilho (`trigger`):** alterações dentro de `frontend/**` nas branches `homolog`, `develop`, `main` ou `master`.
-  * **Stage 1 (CI):** instala dependências, roda os testes unitários em **Chrome Headless** (`npx ng test --watch=false --browsers=ChromeHeadless`) e publica a imagem `joaogabriel199/lifeos-frontend` no **Docker Hub**.
+  * **Stage 1 (CI):** instala dependências, roda os testes unitários em **Chrome Headless** (`npx ng test --watch=false --browsers=ChromeHeadless`) e publica a imagem `joaogabriel199/app-pessoal-frontend:$(Build.BuildId)` no **Docker Hub**.
   * **Stage 2 (CD Homologação):** atualiza via SSH o container `lifeos-frontend-hml` (porta `8080`).
   * **Stage 3 (CD Produção):** atualiza via SSH o container `lifeos-frontend` (porta `80`).
 
@@ -141,12 +141,12 @@ cd frontend && npx ng test --watch=false --browsers=ChromeHeadless
 docker login
 
 # Build e Push da imagem do Backend
-docker build -t joaogabriel199/lifeos-backend:latest ./backend
-docker push joaogabriel199/lifeos-backend:latest
+docker build -t joaogabriel199/app-pessoal-backend:latest ./backend
+docker push joaogabriel199/app-pessoal-backend:latest
 
 # Build e Push da imagem do Frontend (Nginx + Angular)
-docker build -t joaogabriel199/lifeos-frontend:latest ./frontend
-docker push joaogabriel199/lifeos-frontend:latest
+docker build -t joaogabriel199/app-pessoal-frontend:latest ./frontend
+docker push joaogabriel199/app-pessoal-frontend:latest
 ```
 
 ### 3.3. Comandos Executados via SSH na VM da Azure (Sem Docker Compose)
@@ -167,7 +167,7 @@ docker run -d \
   postgres:16-alpine
 
 # 3. Atualizar/Subir o Container 2 (Backend NestJS + Prisma)
-docker pull joaogabriel199/lifeos-backend:latest
+docker pull joaogabriel199/app-pessoal-backend:latest
 docker stop lifeos-backend || true && docker rm lifeos-backend || true
 docker run -d \
   --name lifeos-backend \
@@ -177,17 +177,17 @@ docker run -d \
   -e PORT=3000 \
   -e DATABASE_URL="postgresql://postgres:senha_segura@postgres:5432/app_pessoal?schema=public" \
   -e JWT_SECRET="segredo_jwt_producao" \
-  joaogabriel199/lifeos-backend:latest
+  joaogabriel199/app-pessoal-backend:latest
 
 # 4. Atualizar/Subir o Container 1 (Frontend Angular + Proxy Reverso Nginx na Porta 80)
-docker pull joaogabriel199/lifeos-frontend:latest
+docker pull joaogabriel199/app-pessoal-frontend:latest
 docker stop lifeos-frontend || true && docker rm lifeos-frontend || true
 docker run -d \
   --name lifeos-frontend \
   --restart always \
   --network lifeos-prod-net \
   -p 80:80 \
-  joaogabriel199/lifeos-frontend:latest
+  joaogabriel199/app-pessoal-frontend:latest
 
 # 5. Inspecionar containers ativos, logs e limpar imagens antigas
 docker ps

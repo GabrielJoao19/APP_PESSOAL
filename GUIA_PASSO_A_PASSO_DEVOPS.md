@@ -75,10 +75,11 @@ Se você criar uma pipeline sem testes, qualquer código com bug que alguém der
 Porque compilar código (Angular/TypeScript) consome muita memória RAM e CPU. Se você fizer `docker build` dentro de uma VPS de 1 GB ou 2 GB de RAM, o servidor trava e tira o sistema do ar.
 
 **Como funciona na prática:**
-1. Você cria sua conta no **Docker Hub** (ex: `joaogabriel199`).
-2. O endereço das suas imagens seguirá sempre o padrão **`usuario/nome-da-imagem:tag`**:
-   * Backend: `joaogabriel199/lifeos-backend:<numero-do-build>`
-   * Frontend: `joaogabriel199/lifeos-frontend:<numero-do-build>`
+1. Você cria sua conta no **Docker Hub** (ex: `joaogabriel199`) e cria **2 repositórios**: `app-pessoal-backend` e `app-pessoal-frontend`.
+2. O endereço das suas imagens seguirá sempre o padrão **`usuario/nome-do-repositorio:tag`**:
+   * Backend: `joaogabriel199/app-pessoal-backend:<numero-do-build>`
+   * Frontend: `joaogabriel199/app-pessoal-frontend:<numero-do-build>`
+3. Em **Account Settings → Security → Personal Access Tokens**, você gera um token (`Read, Write, Delete`) para colar na *Service Connection* do Azure DevOps.
 3. Assim, quem faz o trabalho pesado de compilar é o servidor gratuito da pipeline (Azure DevOps), e a sua VPS só baixa a imagem pronta e leve (`docker pull`).
 
 ---

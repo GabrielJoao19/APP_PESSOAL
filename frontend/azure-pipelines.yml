@@ -27,9 +27,9 @@ pr:
 variables:
   # Service Connection do Docker Hub configurada no Azure DevOps
   DOCKERHUB_CONNECTION: 'dockerhub-connection'
-  # Seu nome de usuário no Docker Hub
+  # Seu nome de usuário e repositório do Frontend no Docker Hub
   DOCKERHUB_USERNAME: 'joaogabriel199'
-  IMAGE_NAME: '$(DOCKERHUB_USERNAME)/lifeos-frontend'
+  IMAGE_NAME: '$(DOCKERHUB_USERNAME)/app-pessoal-frontend'
 
   # Service Connections SSH para as VMs no Azure DevOps
   SSH_HOMOLOG_CONNECTION: 'azure-vm-homolog-ssh'
@@ -68,7 +68,7 @@ stages:
             displayName: 'Executar Testes Unitários do Frontend (Headless Chrome)'
 
           - task: Docker@2
-            displayName: 'Build e Push para o Docker Hub ($(IMAGE_NAME))'
+            displayName: 'Build e Push para o Docker Hub ($(IMAGE_NAME):$(Build.BuildId))'
             inputs:
               containerRegistry: '$(DOCKERHUB_CONNECTION)'
               repository: '$(IMAGE_NAME)'
