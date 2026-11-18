@@ -1,0 +1,106 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "LifeOS API",
+    "description": "Especificação OpenAPI 3.0 do Backend LifeOS utilizada para auditoria automatizada de segurança DAST com OWASP ZAP.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api",
+      "description": "Ambiente de Homologação (via Proxy Reverso Nginx)"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Container Backend Direto"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Healthcheck da API",
+        "responses": {
+          "200": { "description": "API online" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Autenticação de usuário e emissão de JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "senha"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "senha": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Token JWT gerado" },
+          "401": { "description": "Credenciais inválidas" }
+        }
+      }
+    },
+    "/financas/envelopes": {
+      "get": {
+        "summary": "Lista envelopes de orçamento",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de envelopes" }, "401": { "description": "Não autorizado" } }
+      },
+      "post": {
+        "summary": "Cria novo envelope de orçamento",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "Envelope criado" }, "401": { "description": "Não autorizado" } }
+      }
+    },
+    "/financas/gastos": {
+      "get": {
+        "summary": "Lista gastos registrados",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de gastos" }, "401": { "description": "Não autorizado" } }
+      },
+      "post": {
+        "summary": "Registra novo gasto e atualiza saldo do envelope",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "Gasto registrado" }, "401": { "description": "Não autorizado" } }
+      }
+    },
+    "/produtividade/tarefas": {
+      "get": {
+        "summary": "Lista tarefas e hábitos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de tarefas" }, "401": { "description": "Não autorizado" } }
+      }
+    },
+    "/produtividade/diarios": {
+      "get": {
+        "summary": "Lista entradas do diário",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de diários" }, "401": { "description": "Não autorizado" } }
+      }
+    },
+    "/saude/metas-fitness": {
+      "get": {
+        "summary": "Lista metas de saúde e fitness",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de metas fitness" }, "401": { "description": "Não autorizado" } }
+      }
+    }
+  }
+}

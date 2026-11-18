@@ -9,7 +9,7 @@ import { UsuariosModule } from '../usuarios/usuarios.module.js'
   imports: [
     UsuariosModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET || 'lifeos-dev-secret',
       signOptions: { expiresIn: '24h'}
     })],
   controllers: [AuthController],
